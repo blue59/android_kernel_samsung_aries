@@ -33,6 +33,10 @@
 #include <asm/setup.h>
 #include <linux/string.h>
 
+#ifdef CONFIG_MACH_WAVE
+#include <asm/mach-types.h>
+#endif
+
 enum soc_type {
 	TYPE_S3C6400,
 	TYPE_S3C6410,
@@ -50,8 +54,13 @@ enum soc_type {
 #include "samsung_gsm.h"
 #elif defined(CONFIG_PHONE_P1_CDMA)
 #include "samsung_p1c.h"
+<<<<<<< HEAD
 #elif defined(CONFIG_SAMSUNG_GALAXYS4G)
 #include "samsung_galaxys4g.h"
+=======
+#elif defined(CONFIG_MACH_WAVE)
+#include "samsung_wave.h"
+>>>>>>> 875a16b... wave: Set of new drivers for Samsung Wave(GT-S8500) and WaveII(GT-S8530)
 #else
 #error Should not be used on aries devices (can brick!).
 #include "samsung.h"
@@ -1111,8 +1120,18 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 #endif
 	if (num_partitions <= 0) {
 		/* default partition table */
-		num_partitions = ARRAY_SIZE(s3c_partition_info);	/* pdata->nr_parts */
-		partitions = s3c_partition_info;			/* pdata->parts */
+#ifdef CONFIG_MACH_WAVE
+		if(machine_is_wave2()) {
+			num_partitions = ARRAY_SIZE(wave_s8530_partition_info);	/* pdata->nr_parts */
+			partitions = wave_s8530_partition_info;			/* pdata->parts */
+		} else {
+			num_partitions = ARRAY_SIZE(wave_s8500_partition_info);	/* pdata->nr_parts */
+			partitions = wave_s8500_partition_info;			/* pdata->parts */
+		}
+#else
+		num_partitions = ARRAY_SIZE(s3c_partition_info);        /* pdata->nr_parts */
+		partitions = s3c_partition_info;                        /* pdata->parts */
+#endif
 	}
 
 	if (partitions && num_partitions > 0)
